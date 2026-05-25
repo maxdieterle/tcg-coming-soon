@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1779752647518,
+      "tag": "0000_flashy_tyger_tiger",
+      "breakpoints": true
+    }
+  ]
+}

@@ -6,6 +6,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import { trpc } from "@/lib/trpc";
 
 // ─── Brand Logos (SVG inline components) ─────────────────────────────────────
 
@@ -268,11 +269,29 @@ function BrandLogoCard({ name, abbr, color, textColor, accent, style }: typeof B
 function EmailCapture() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [alreadySubscribed, setAlreadySubscribed] = useState(false);
   const [focused, setFocused] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const subscribeMutation = trpc.subscription.subscribe.useMutation({
+    onSuccess: (data) => {
+      if (data.success) {
+        setSubmitted(true);
+        setAlreadySubscribed(false);
+      } else if (data.reason === "already_subscribed") {
+        setAlreadySubscribed(true);
+        setSubmitted(true);
+      }
+    },
+    onError: (err) => {
+      setErrorMsg(err.message || "Something went wrong. Please try again.");
+    },
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) setSubmitted(true);
+    setErrorMsg("");
+    if (email) subscribeMutation.mutate({ email });
   };
 
   if (submitted) {
@@ -284,32 +303,36 @@ function EmailCapture() {
           alignItems: "center",
           gap: "0.75rem",
           padding: "0.85rem 1.5rem",
-          background: "rgba(245,196,0,0.12)",
-          border: "1.5px solid rgba(245,196,0,0.5)",
+          background: alreadySubscribed ? "rgba(255,255,255,0.06)" : "rgba(245,196,0,0.12)",
+          border: `1.5px solid ${alreadySubscribed ? "rgba(255,255,255,0.2)" : "rgba(245,196,0,0.5)"}`,
           borderRadius: "4px",
         }}
       >
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <circle cx="10" cy="10" r="9" stroke="#F5C400" strokeWidth="1.5" />
-          <path d="M6 10l3 3 5-5" stroke="#F5C400" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="10" cy="10" r="9" stroke={alreadySubscribed ? "rgba(255,255,255,0.5)" : "#F5C400"} strokeWidth="1.5" />
+          <path d="M6 10l3 3 5-5" stroke={alreadySubscribed ? "rgba(255,255,255,0.5)" : "#F5C400"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
         <span style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 500, color: "rgba(255,255,255,0.9)", fontSize: "0.9rem" }}>
-          You're on the list. We'll be in touch.
+          {alreadySubscribed ? "You're already on the list!" : "You're on the list. We'll be in touch."}
         </span>
       </div>
     );
   }
 
+  const isLoading = subscribeMutation.isPending;
+
   return (
-    <form onSubmit={handleSubmit} style={{ display: "flex", gap: "0", maxWidth: "480px", width: "100%" }}>
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        placeholder="Enter your email address"
-        required
+    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxWidth: "480px", width: "100%" }}>
+      <form onSubmit={handleSubmit} style={{ display: "flex", gap: "0", width: "100%" }}>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          placeholder="Enter your email address"
+          required
+          disabled={isLoading}
           style={{
             flex: 1,
             padding: "0.85rem 1.25rem",
@@ -319,44 +342,63 @@ function EmailCapture() {
             borderLeft: `1.5px solid ${focused ? "#F5C400" : "rgba(255,255,255,0.2)"}`,
             borderRight: "none",
             borderRadius: "4px 0 0 4px",
-          color: "white",
-          fontFamily: "'Barlow', sans-serif",
-          fontSize: "0.9rem",
-          outline: "none",
-          transition: "border-color 0.2s ease",
-        }}
-      />
-      <button
-        type="submit"
-        style={{
-          padding: "0.85rem 1.5rem",
-          background: "#F5C400",
-          border: "1.5px solid #F5C400",
-          borderRadius: "0 4px 4px 0",
-          color: "#0D2240",
-          fontFamily: "'Barlow Condensed', sans-serif",
-          fontWeight: 700,
-          fontSize: "0.85rem",
-          letterSpacing: "0.12em",
-          textTransform: "uppercase",
-          cursor: "pointer",
-          transition: "background 0.15s ease, transform 0.1s ease",
-          display: "flex",
-          alignItems: "center",
-          gap: "0.4rem",
-          whiteSpace: "nowrap",
-        }}
-        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#ffd700"; }}
-        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#F5C400"; }}
-        onMouseDown={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(0.97)"; }}
-        onMouseUp={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)"; }}
-      >
-        Notify Me
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M2 7h10M8 3l4 4-4 4" stroke="#0D2240" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
-    </form>
+            color: "white",
+            fontFamily: "'Barlow', sans-serif",
+            fontSize: "0.9rem",
+            outline: "none",
+            transition: "border-color 0.2s ease",
+            opacity: isLoading ? 0.6 : 1,
+          }}
+        />
+        <button
+          type="submit"
+          disabled={isLoading}
+          style={{
+            padding: "0.85rem 1.5rem",
+            background: isLoading ? "#c9a200" : "#F5C400",
+            border: "1.5px solid #F5C400",
+            borderRadius: "0 4px 4px 0",
+            color: "#0D2240",
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontWeight: 700,
+            fontSize: "0.85rem",
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            cursor: isLoading ? "not-allowed" : "pointer",
+            transition: "background 0.15s ease, transform 0.1s ease",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.4rem",
+            whiteSpace: "nowrap",
+          }}
+          onMouseEnter={(e) => { if (!isLoading) (e.currentTarget as HTMLButtonElement).style.background = "#ffd700"; }}
+          onMouseLeave={(e) => { if (!isLoading) (e.currentTarget as HTMLButtonElement).style.background = "#F5C400"; }}
+          onMouseDown={(e) => { if (!isLoading) (e.currentTarget as HTMLButtonElement).style.transform = "scale(0.97)"; }}
+          onMouseUp={(e) => { if (!isLoading) (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)"; }}
+        >
+          {isLoading ? (
+            <>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ animation: "spin 0.8s linear infinite" }}>
+                <circle cx="7" cy="7" r="5.5" stroke="#0D2240" strokeWidth="2" strokeDasharray="20" strokeDashoffset="10" strokeLinecap="round" />
+              </svg>
+              Sending...
+            </>
+          ) : (
+            <>
+              Notify Me
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M2 7h10M8 3l4 4-4 4" stroke="#0D2240" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </>
+          )}
+        </button>
+      </form>
+      {errorMsg && (
+        <p style={{ fontFamily: "'Barlow', sans-serif", fontSize: "0.8rem", color: "#ff6b6b", margin: 0 }}>
+          {errorMsg}
+        </p>
+      )}
+    </div>
   );
 }
 
