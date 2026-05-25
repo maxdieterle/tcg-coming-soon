@@ -310,13 +310,15 @@ function EmailCapture() {
         onBlur={() => setFocused(false)}
         placeholder="Enter your email address"
         required
-        style={{
-          flex: 1,
-          padding: "0.85rem 1.25rem",
-          background: "rgba(255,255,255,0.07)",
-          border: `1.5px solid ${focused ? "#F5C400" : "rgba(255,255,255,0.2)"}`,
-          borderRight: "none",
-          borderRadius: "4px 0 0 4px",
+          style={{
+            flex: 1,
+            padding: "0.85rem 1.25rem",
+            background: "rgba(255,255,255,0.07)",
+            borderTop: `1.5px solid ${focused ? "#F5C400" : "rgba(255,255,255,0.2)"}`,
+            borderBottom: `1.5px solid ${focused ? "#F5C400" : "rgba(255,255,255,0.2)"}`,
+            borderLeft: `1.5px solid ${focused ? "#F5C400" : "rgba(255,255,255,0.2)"}`,
+            borderRight: "none",
+            borderRadius: "4px 0 0 4px",
           color: "white",
           fontFamily: "'Barlow', sans-serif",
           fontSize: "0.9rem",
