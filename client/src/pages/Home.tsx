@@ -362,7 +362,7 @@ function EmailCapture() {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-const LAUNCH_DATE = new Date("2026-09-01T00:00:00");
+const LAUNCH_DATE = new Date("2026-07-01T00:00:00");
 
 const HERO_TRUCK_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310419663029836944/4hoLYGkxNUNQpxb63DmJdw/tcg-hero-truck-LjPzgwtvMFWZ9jgCXCNFmX.webp";
 const NETWORK_MAP_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310419663029836944/4hoLYGkxNUNQpxb63DmJdw/tcg-network-map-QvtEyW5exyivyzfwgoJBFn.webp";
