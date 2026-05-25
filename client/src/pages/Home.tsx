@@ -468,37 +468,18 @@ export default function Home() {
             </span>
           </div>
 
-          {/* TCG Logo / Wordmark */}
+          {/* TCG Logo / Wordmark — real brand asset */}
           <div className="animate-slide-left delay-100" style={{ marginBottom: "1.5rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <span
-                style={{
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontWeight: 800,
-                  fontStyle: "italic",
-                  fontSize: "clamp(4rem, 12vw, 9rem)",
-                  lineHeight: 0.9,
-                  color: "white",
-                  letterSpacing: "-0.02em",
-                  textShadow: "0 4px 32px rgba(0,0,0,0.4)",
-                }}
-              >
-                TCG
-              </span>
-              {/* Chevron arrow */}
-              <svg
-                viewBox="0 0 60 90"
-                fill="none"
-                style={{
-                  width: "clamp(2.5rem, 7vw, 5.5rem)",
-                  height: "clamp(2.5rem, 7vw, 5.5rem)",
-                  marginLeft: "0.25rem",
-                  filter: "drop-shadow(0 2px 12px rgba(245,196,0,0.4))",
-                }}
-              >
-                <polygon points="0,0 40,45 0,90 20,90 60,45 20,0" fill="#F5C400" />
-              </svg>
-            </div>
+            <img
+              src="/manus-storage/tcg-logo-white_e296c14d.png"
+              alt="TCG"
+              style={{
+                height: "clamp(4rem, 12vw, 9rem)",
+                width: "auto",
+                display: "block",
+                filter: "drop-shadow(0 4px 32px rgba(0,0,0,0.4))",
+              }}
+            />
           </div>
 
           {/* Headline */}
