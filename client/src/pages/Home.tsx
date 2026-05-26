@@ -528,6 +528,22 @@ export default function Home() {
           padding: "2.5rem clamp(1.5rem, 5vw, 4rem)",
         }}
       >
+        {/* Visually hidden H2 for SEO — screen-reader accessible, does not affect layout */}
+        <h2
+          style={{
+            position: "absolute",
+            width: "1px",
+            height: "1px",
+            padding: 0,
+            margin: "-1px",
+            overflow: "hidden",
+            clip: "rect(0,0,0,0)",
+            whiteSpace: "nowrap",
+            border: 0,
+          }}
+        >
+          North American Logistics, Trucking &amp; Warehousing — TCG Network
+        </h2>
         <div
           ref={statsRef}
           style={{
